@@ -1,170 +1,176 @@
-# ⚡ Weather & Energy Dashboard
+# Power Outage Severity Analysis
 
-A full-stack web application featuring **global weather data** and **California grid load forecasting** using machine learning.
+**What characteristics are associated with higher severity major power outages in the continental United States?**
 
-![Dashboard Preview](https://img.shields.io/badge/Status-Active-brightgreen) ![React](https://img.shields.io/badge/React-18-blue) ![Astro](https://img.shields.io/badge/Astro-4-purple) ![Python](https://img.shields.io/badge/Python-3.10-yellow)
-
----
-
-## 🌟 Features
-
-### 🌍 Global Weather Dashboard
-- Real-time weather for any city worldwide
-- 7-day forecasts with temperature trends
-- Toggle between °C and °F
-- Interactive charts and data tables
-
-### ⚡ Grid Load Forecasting
-- 14-day electricity demand predictions
-- **4 California service areas:** SCE, PG&E, SDG&E, VEA
-- **3 ML models:** Ridge Regression, Random Forest, Gradient Boosting
-- Cross-validation results and feature importance analysis
+This project performs an end-to-end exploratory data analysis and predictive modeling investigation of 1,533 major power outage events across the continental U.S. from January 2000 to July 2016. The dataset originates from [Purdue University's LASCI Research Data](https://engineering.purdue.edu/LASCI/research-data/outages) and includes information on outage causes, duration, regional climate, electricity consumption, economic characteristics, and land-use patterns.
 
 ---
 
-## 📊 Model Performance
+## Introduction
 
-| Model | MAE (MW) | RMSE (MW) | MAPE |
-|-------|----------|-----------|------|
-| Ridge + Weather | 840.0 | 1,023.0 | 3.41% |
-| Random Forest | 576.9 | 751.1 | 2.29% |
-| **Gradient Boosting** | **573.2** | **724.8** | **2.26%** |
+Major power outages carry significant consequences for public safety, economic activity, and infrastructure reliability. Understanding what makes certain outages more severe than others — and whether severity can be predicted early — is valuable for utilities, emergency planners, and policymakers.
 
-*Validated using 5-fold expanding window cross-validation on 315,648 observations*
+This analysis defines **outage severity** primarily through **outage duration**, with events in the top 25% of duration (≥ 48 hours) classified as "severe." The dataset contains 1,533 rows (after removing Alaska, which is not part of the continental U.S.) and 56 columns spanning outage event details, regional climate conditions, electricity pricing, customer demographics, and state-level economic indicators.
 
----
+Key columns relevant to this analysis include:
 
-## 🛠️ Tech Stack
-
-**Frontend:**
-- React 18
-- Astro 4
-- Recharts (data visualization)
-
-**Backend:**
-- FastAPI
-- Python 3.10
-- scikit-learn
-
-**APIs:**
-- OpenWeather API
-- Open-Meteo API
+| Column | Description |
+|---|---|
+| `YEAR`, `MONTH` | When the outage occurred |
+| `U.S._STATE`, `POSTAL.CODE` | Location of the outage |
+| `NERC.REGION` | North American Electric Reliability Corporation region |
+| `CLIMATE.REGION`, `CLIMATE.CATEGORY` | U.S. Climate region and episode classification (warm/cold/normal) |
+| `ANOMALY.LEVEL` | El Niño/La Niña oceanic index for the period |
+| `CAUSE.CATEGORY` | High-level cause of the outage (e.g., severe weather, intentional attack) |
+| `OUTAGE.DURATION` | Duration in minutes |
+| `CUSTOMERS.AFFECTED` | Number of customers affected |
+| `POPDEN_URBAN`, `POPDEN_RURAL` | Population density in urban and rural areas (persons per sq mile) |
+| `TOTAL.CUSTOMERS` | Total customers served in the state |
+| `POPULATION`, `POPPCT_URBAN` | State population and urbanization rate |
+| `PC.REALGSP.STATE` | Per capita real gross state product |
 
 ---
 
-## 📁 Project Structure
+## Data Cleaning and Exploratory Data Analysis
 
-```
-├── src/
-│   ├── components/
-│   │   ├── Header.jsx         # Navigation bar
-│   │   ├── Forecast.jsx       # Grid load forecasting
-│   │   └── Table_Charts.jsx   # Weather dashboard
-│   └── pages/
-│       ├── index.astro        # Home page
-│       ├── Forecast.astro     # Forecast page
-│       └── table_charts.astro # Weather page
-├── app.py                     # FastAPI backend
-├── package.json
-└── README.md
-```
+### Cleaning Steps
 
----
+1. **Header extraction:** The raw Excel file contains metadata rows above the actual data. The first 5 rows were skipped to extract the correct header, and the units row was dropped.
+2. **Datetime combination:** `OUTAGE.START.DATE` and `OUTAGE.START.TIME` were combined into a single `OUTAGE.START` datetime column. The same was done for restoration date and time to create `OUTAGE.RESTORATION`. The original four columns were then dropped.
+3. **Type conversion:** Numeric columns such as `OUTAGE.DURATION`, `CUSTOMERS.AFFECTED`, and `DEMAND.LOSS.MW` were coerced to proper numeric types.
+4. **Alaska removal:** Alaska was dropped because the dataset specifies continental U.S. only, and Alaska's extreme urban-rural density ratio (4,506×) would distort the analysis.
+5. **Feature engineering:** An urban-rural **density gap** was created (`POPDEN_URBAN / POPDEN_RURAL`), measuring how concentrated a state's population is in urban cores versus rural areas. States were binned into terciles: Low Gap (more uniform population), Medium Gap, and High Gap (urban-rural divide).
+6. **Missing value treatment:** `OUTAGE.DURATION` has 58 missing values (3.7%), `CUSTOMERS.AFFECTED` has 443 (28.9%), and `DEMAND.LOSS.MW` has 705 (46.0%). These were left as `NaN`; missingness is explored in Step 3.
 
-## 🚀 Getting Started
+### Univariate Analysis
 
-### Prerequisites
-- Node.js 18+
-- Python 3.10+
-- OpenWeather API key
+- The distribution of `OUTAGE.DURATION` is heavily right-skewed: the median is 11.7 hours, but the mean is 43.8 hours, with a maximum of 75.5 days.
+- **Severe weather** accounts for roughly half of all outages (763 of 1,533 events), followed by intentional attacks (418) and system operability disruptions (127).
 
-### Installation
+### Bivariate Analysis
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/k-shiroma-code/Weather-API-Project.git
-   cd Weather-API-Project
-   ```
+- A scatter plot of the urban-rural density gap vs. outage duration (colored by cause) reveals that outages in high density-gap states tend to cluster at shorter durations, while low-gap states spread across both short and long durations.
+- A box plot of customers affected by density tier shows that low-gap states affect more customers per event (median ~79K) while high-gap states affect far fewer (median ~4.9K).
 
-2. **Install frontend dependencies**
-   ```bash
-   npm install
-   ```
+### Interesting Aggregates
 
-3. **Install backend dependencies**
-   ```bash
-   pip install fastapi uvicorn requests python-dotenv
-   ```
+| Cause ↓ \ Density Gap → | Low Gap (more uniform) | Medium Gap | High Gap (urban-rural divide) |
+|---|---|---|---|
+| Severe Weather | 38.7 hrs | 41.9 hrs | 42.0 hrs |
+| Intentional Attack | 1.5 hrs | 0.3 hrs | 1.2 hrs |
+| Fuel Supply Emergency | 132.8 hrs | 48.0 hrs | 312.0 hrs |
+| Equipment Failure | 3.0 hrs | 3.6 hrs | 7.5 hrs |
+| System Disruption | 3.6 hrs | 3.7 hrs | 3.3 hrs |
+| Public Appeal | 18.2 hrs | 8.3 hrs | 5.0 hrs |
+| Islanding | 3.2 hrs | 0.5 hrs | 1.3 hrs |
 
-4. **Set up environment variables**
-   ```bash
-   echo "OPENWEATHER_API_KEY=your_api_key_here" > .env
-   ```
+*(Median outage duration in hours by cause category and density gap tier)*
 
-5. **Run the backend**
-   ```bash
-   uvicorn app:app --reload --port 8000
-   ```
-
-6. **Run the frontend** (in a new terminal)
-   ```bash
-   npm run dev
-   ```
-
-7. **Open** http://localhost:4321
+The pivot table reveals that severe weather duration is fairly consistent across density tiers (~39–42 hrs), but fuel supply emergencies vary wildly — lasting over 300 hours in high-gap states. Public appeal outages show the clearest trend: longer in low-gap states (18 hrs) and shorter in high-gap states (5 hrs), suggesting concentrated populations are easier to manage during voluntary conservation events.
 
 ---
 
-## 📖 Glossary
+## Assessment of Missingness
 
-| Term | Definition |
-|------|------------|
-| **MW (Megawatt)** | Unit of power. 1 MW powers ~750-1,000 homes |
-| **MAE** | Mean Absolute Error - average prediction error in MW |
-| **MAPE** | Mean Absolute Percentage Error - error as a percentage |
-| **Grid Load** | Total electricity demand at any moment |
-| **Gradient Boosting** | ML technique combining multiple models iteratively |
-| **Cross-Validation** | Method to test model performance on unseen data |
+### NMAR Analysis
 
----
+`CUSTOMERS.AFFECTED` (28.9% missing) is likely **NMAR** — the value tends to be missing *because* the true customer impact is small. Events with negligible customer impact (especially intentional attacks like minor vandalism) simply don't get that field recorded by utilities. The missingness depends on the unobserved value itself: if the true number of affected customers is very low, there's less incentive or requirement to formally assess and report it.
 
-## 🏢 Service Areas
+Additional data that could make this MAR: utility company reporting thresholds or DOE filing requirements that specify when customer counts must be included.
 
-| Area | Region | Population | Avg Load |
-|------|--------|------------|----------|
-| **SCE** | Southern California | 15 million | ~24,000 MW |
-| **PG&E** | Northern & Central CA | 16 million | ~18,000 MW |
-| **SDG&E** | San Diego Area | 3.7 million | ~4,500 MW |
-| **VEA** | Nevada/CA Border | 45,000 | ~200 MW |
+### Missingness Dependency
+
+Permutation tests were conducted on the missingness of `CUSTOMERS.AFFECTED`:
+
+- **Depends on `CAUSE.CATEGORY`** (TVD = 0.558, p = 0.0): The distribution of cause categories looks completely different between missing and non-missing rows. Intentional attacks are massively overrepresented in the missing group — these small-scale vandalism events rarely get formal customer impact assessments.
+
+- **Does NOT depend on `COM.PERCEN`** (p = 0.985): The share of commercial electricity consumption in a state has no relationship to whether customer counts are reported. The distributions when missing vs. not missing are nearly identical.
 
 ---
 
-## 📈 Data Source
+## Hypothesis Testing
 
-- **Grid Data:** [Kaggle - California ISO](https://www.kaggle.com/) (315,648 observations, 2019-2021)
-- **Weather Data:** OpenWeather API, Open-Meteo API
+**Question:** Do states with a high urban-rural density gap have significantly shorter outages than states with a low density gap?
 
----
+- **Null hypothesis:** The mean outage duration is the same for high density-gap states and low density-gap states. Any observed difference is due to random chance.
+- **Alternative hypothesis:** Low density-gap states (more uniform population) have a higher mean outage duration than high density-gap states.
+- **Test statistic:** Difference in group means (low gap mean − high gap mean).
+- **Significance level:** α = 0.05
 
-## 🤝 Contributing
-
-Contributions are welcome! Feel free to open an issue or submit a pull request.
-
----
-
-## 📄 License
-
-This project is open source and available under the [MIT License](LICENSE).
+**Result:** The observed difference was 906 minutes (15.1 hours), with a p-value of 0.002. We reject the null hypothesis — states with a more uniform population distribution experience significantly longer outages. This suggests that concentrated urban populations enable faster restoration, while spread-out populations require crews to cover wider areas, extending recovery time.
 
 ---
 
-## 👤 Author
+## Framing a Prediction Problem
 
-**K. Shiroma**
-- GitHub: [@k-shiroma-code](https://github.com/k-shiroma-code)
+**Prediction task:** Given characteristics known at the time of an outage, can we predict whether it will be **severe** (lasting 48+ hours, the top 25% of duration)?
+
+This is a **binary classification** problem.
+
+- **Target variable:** `SEVERE` (1 if duration ≥ 2,880 minutes, 0 otherwise)
+- **Evaluation metric:** F1 score — chosen because the classes are imbalanced (75% not severe, 25% severe). Accuracy alone would reward a model that always predicts "not severe" (75% accuracy). F1 balances precision and recall for the minority class.
+- **No data leakage:** All features used are known at the time of the outage — no restoration time, duration, or customer impact information is included as a feature.
 
 ---
 
-<p align="center">
-  Built with ☕ and ⚡
-</p>
+## Baseline Model
+
+**Algorithm:** Decision Tree Classifier
+
+**Features (4):**
+- `CAUSE.CATEGORY` (nominal) — one-hot encoded
+- `CLIMATE.CATEGORY` (nominal) — one-hot encoded
+- `NERC.REGION` (nominal) — one-hot encoded
+- `MONTH` (ordinal) — standardized
+
+These are deliberately basic: the three categorical features capture the what, where, and when of the outage at a high level, with no engineered features or hyperparameter tuning.
+
+**Results:**
+- Accuracy: 0.744
+- F1 Score: 0.443
+
+The baseline barely outperforms the naive strategy of always predicting "not severe" (75.4% accuracy). It identifies severe outages at only 44% recall, meaning it misses more than half of them.
+
+---
+
+## Final Model
+
+**Algorithm:** Random Forest Classifier with GridSearchCV (5-fold cross-validation)
+
+**Features (11):** All baseline features plus:
+- `ANOMALY.LEVEL` (numeric) — El Niño/La Niña index; extreme climate episodes drive severe weather
+- `POPULATION` (numeric) — larger states have different grid resilience characteristics
+- `POPPCT_URBAN` (numeric) — urban vs. rural infrastructure differences
+- `TOTAL.CUSTOMERS` (numeric) — grid size as a proxy for utility resources
+- `TOTAL.PRICE` (numeric) — electricity market conditions
+- `PC.REALGSP.STATE` (numeric) — state wealth may affect grid investment and restoration speed
+- `DENSITY_GAP` (numeric, engineered) — our urban-rural density ratio from EDA, which showed a significant relationship with outage duration
+
+**Best hyperparameters:** `max_depth=20`, `min_samples_split=2`, `n_estimators=200`
+
+**Results:**
+- Accuracy: 0.827
+- F1 Score: 0.536
+
+The final model improves F1 by **0.09** and accuracy by **8 percentage points** over the baseline. The improvement comes from both the additional features (especially the density gap and climate features that our EDA identified as meaningful) and the Random Forest's ability to capture nonlinear interactions between features. The deep trees (`max_depth=20`) suggest severity is driven by complex feature interactions rather than simple rules.
+
+---
+
+## Fairness Analysis
+
+**Question:** Does the model perform equally across climate categories? Specifically, is the model fair for outages occurring in **cold** vs. **warm** climate conditions?
+
+This matters because if the model underperforms in one climate category, utilities in those regions would receive less accurate severity predictions — an equity concern for emergency planning.
+
+- **Null hypothesis:** The model's F1 score is the same for cold and warm climate regions. Any observed difference is due to random chance.
+- **Alternative hypothesis:** The model's F1 score differs between cold and warm climate regions.
+- **Test statistic:** Difference in F1 scores (cold − warm)
+- **Significance level:** α = 0.05
+
+**Result:**
+- F1 (cold climate): 0.621
+- F1 (warm climate): 0.615
+- Observed difference: 0.005
+- Permutation test p-value: 0.999
+
+**Conclusion:** We fail to reject the null hypothesis. The model performs virtually identically across cold and warm climate categories (F1 difference of just 0.005, p = 0.999). There is no evidence of unfairness — the model is equally useful for predicting outage severity regardless of climate conditions.
