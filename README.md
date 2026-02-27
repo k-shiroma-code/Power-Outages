@@ -72,7 +72,7 @@ The pivot table reveals that severe weather duration is fairly consistent across
 
 ## Assessment of Missingness
 
-### NMAR Analysis
+### MNAR Analysis
 
 `CUSTOMERS.AFFECTED` (28.9% missing) is likely **NMAR** — the value tends to be missing *because* the true customer impact is small. Events with negligible customer impact (especially intentional attacks like minor vandalism) simply don't get that field recorded by utilities. The missingness depends on the unobserved value itself: if the true number of affected customers is very low, there's less incentive or requirement to formally assess and report it.
 
