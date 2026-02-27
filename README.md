@@ -2,7 +2,7 @@
 
 **What characteristics are associated with higher severity major power outages in the continental United States?**
 
-This project performs an end-to-end exploratory data analysis and predictive modeling investigation of 1,533 major power outage events across the continental U.S. from January 2000 to July 2016. The dataset originates from [Purdue University's LASCI Research Data](https://engineering.purdue.edu/LASCI/research-data/outages) and includes information on outage causes, duration, regional climate, electricity consumption, economic characteristics, and land-use patterns.
+UCSD recently experienced a campus-wide power outage, which made me curious about what drives major outages and why some last hours while others last weeks. Using a dataset of 1,533 major outage events across the continental U.S. from 2000 to 2016, I investigated what characteristics are associated with higher severity outages — from cause and climate conditions to a state's urban-rural population distribution. The dataset originates from [Purdue University's LASCI Research Data](https://engineering.purdue.edu/LASCI/research-data/outages) and combines outage event details with regional climate, economic, and demographic variables, giving enough dimensions to explore severity from multiple angles and build predictive models. This project also connects to my upcoming internship at Southern California Edison (SCE), where I'll be working in grid performance within system planning and engineering.
 
 ---
 
