@@ -23,9 +23,7 @@ The dataset comes from Purdue University and contains **1,534 major power outage
 
 ---
 
-## Data Cleaning and Exploratory Data Analysis
-
-### Data Cleaning
+## Data Cleaning and EDA
 
 We performed the following cleaning steps:
 
