@@ -20,7 +20,6 @@ The dataset comes from Purdue University and contains **1,534 major power outage
 | `POPDEN_RURAL` | Rural population density |
 | `TOTAL.CUSTOMERS` | Total customers served in the state |
 
----
 
 ---
 
