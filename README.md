@@ -1,5 +1,5 @@
 ## Introduction
-## By: Kyle Shiroma and Marcus De Ramos
+**By: Kyle Shiroma and Marcus De Ramos**
 
 Power outages hit millions of Americans every year and mess with daily life, businesses, even important infrastructure. But not all outages are the same. Some only last a couple hours, while others drag on for days. Figuring out what actually makes an outage more severe could help utility companies prepare better and use their resources more efficiently.
 
@@ -52,17 +52,17 @@ Here is the head of the cleaned DataFrame:
 
 ### Univariate Analysis
 
-<iframe src="assets/fig_uni1.html" width="800" height="400" frameborder="0"></iframe>
+<iframe src="assets/fig_uni1.html" width="1000" height="1000" frameborder="0"></iframe>
 
 Most outages are relatively short, with the majority lasting under 2,000 minutes. However, there are a few extreme outages that last much longer, creating a right skewed distribution.
 
-<iframe src="assets/fig_uni2.html" width="800" height="400" frameborder="0"></iframe>
+<iframe src="assets/fig_uni2.html" width="1000" height="1000" frameborder="0"></iframe>
 
 Severe weather is by far the leading cause of outages, followed by intentional attacks.
 
 ### Bivariate Analysis
 
-<iframe src="assets/fig_bi1.html" width="900" height="500" frameborder="0"></iframe>
+<iframe src="assets/fig_bi1.html" width="1000" height="1000" frameborder="0"></iframe>
 
 This box plot shows outage duration across density tiers and cause categories. Severe weather consistently produces the longest outages regardless of density tier.
 
@@ -92,17 +92,17 @@ To make this MAR instead, we’d need more context like data on each utility’s
 
 We analyzed whether the missingness of `CUSTOMERS.AFFECTED` (28.9% missing) depends on other columns.
 
-**Test 1: Missingness depends on `CAUSE.CATEGORY` (p = 0.0)
+**Test 1: Missingness depends on `CAUSE.CATEGORY` (p = 0.0)**
 
 We ran a permutation test using Total Variation Distance (TVD) as the test statistic, comparing the distribution of `CAUSE.CATEGORY` when `CUSTOMERS.AFFECTED` is missing vs. not missing. The observed TVD was 0.5581, and none of the 1,000 permutations produced a TVD that large, giving a p-value of 0.0. We reject the null at α = 0.05 The missingness of `CUSTOMERS.AFFECTED` depends on `CAUSE.CATEGORY`. This makes sense because certain causes like intentional attacks are far more likely to have missing customer counts.
 
-<iframe src="assets/fig_perm1.html" width="800" height="400" frameborder="0"></iframe>
+<iframe src="assets/fig_perm1.html" width="1000" height="1000" frameborder="0"></iframe>
 
 **Test 2: Missingness does not depend on `COM.PERCEN`** (p = 0.986)
 
-We ran a permutation test using the absolute difference in means of `COM.PERCEN` between rows where `CUSTOMERS.AFFECTED` is missing vs. not. The observed difference was just 0.0085, and the p-value was 0.986. We fail to reject the null at α = 0.05 The missingness of `CUSTOMERS.AFFECTED` does not depend on`COM.PERCEN`.
+We ran a permutation test using the absolute difference in means of `COM.PERCEN` between rows where `CUSTOMERS.AFFECTED` is missing vs. not. The observed difference was just 0.0085, and the p-value was 0.986. We fail to reject the null at α = 0.05 The missingness of `CUSTOMERS.AFFECTED` does not depend on `COM.PERCEN`.
 
-<iframe src="assets/fig_perm_com.html" width="800" height="400" frameborder="0"></iframe>
+<iframe src="assets/fig_perm_com.html" width="1000" height="1000" frameborder="0"></iframe>
 
 ---
 
@@ -119,7 +119,7 @@ The observed difference was 906 minutes (~15 hours), with Low Gap states having 
 
 Since 0.0007 < 0.05, we reject the null hypothesis. There is strong evidence suggesting that states with more evenly spread populations (Low Gap) tend to experience longer outage durations than states with large urban-rural density divides (High Gap). This could be because repairs in evenly spread areas require crews to cover more ground rather than being concentrated in dense urban centers.
 
-<iframe src="assets/fig_hyp.html" width="800" height="400" frameborder="0"></iframe>
+<iframe src="assets/fig_hyp.html" width="1000" height="1000" frameborder="0"></iframe>
 
 ---
 
@@ -198,4 +198,4 @@ The final model is better than the baseline in both accuracy (83.2% vs 78.0%) an
 
 Since 0.4870 > 0.05, we fail to reject the null hypothesis. There is no significant evidence that the model performs unfairly between Low Gap and High Gap states. The small precision difference is consistent with random chance.
 
-<iframe src="assets/fig_fair.html" width="800" height="400" frameborder="0"></iframe>
+<iframe src="assets/fig_fair.html" width="1000" height="1000" frameborder="0"></iframe>
