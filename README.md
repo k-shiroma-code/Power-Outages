@@ -87,7 +87,7 @@ This pivot table shows the median outage duration in minutes for each cause acro
 
 ### MNAR Analysis
 
-We think the column `DEMAND.LOSS.MW` (megawatts of electricity demand lost) is MNAR (Missing Not at Random). It’s missing in about 46% of the rows, which is way higher than anything else in the dataset. A likely reason is that when outages cause very little demand loss, utilities don’t bother measuring or reporting it, so the data is missing because the value itself is small. That means the missingness depends on the actual unobserved value.
+The column `DEMAND.LOSS.MW` (megawatts of electricity demand lost) is MNAR (Missing Not at Random). It’s missing in about 46% of the rows, which is way higher than anything else in the dataset. A likely reason is that when outages cause very little demand loss, utilities don’t bother measuring or reporting it, so the data is missing because the value itself is small. That means the missingness depends on the actual unobserved value.
 
 To make this MAR instead, we’d need more context like data on each utility’s reporting policies. For example, if utilities only report demand loss above a certain threshold, then the missingness could be explained by that rule rather than the value itself. In that case, it would be MAR.
 
