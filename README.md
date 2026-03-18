@@ -44,11 +44,11 @@ Here is the head of the cleaned DataFrame:
 
 | OBS | YEAR | MONTH | U.S._STATE | NERC.REGION | ANOMALY.LEVEL | CLIMATE.CATEGORY | CAUSE.CATEGORY | OUTAGE.DURATION | CUSTOMERS.AFFECTED | DENSITY_TIER | SEVERE |
 |-----|------|-------|------------|-------------|---------------|------------------|----------------|-----------------|--------------------|--------------|--------|
-| 1.0 | 2011 | 7 | Minnesota | MRO | -0.3 | normal | severe weather | 3060 | 70000 | Low Gap | 1 |
-| 2.0 | 2014 | 5 | Minnesota | MRO | -0.1 | normal | intentional attack | 1 | NaN | Low Gap | 0 |
-| 3.0 | 2010 | 10 | Minnesota | MRO | -1.5 | cold | severe weather | 3000 | 70000 | Low Gap | 1 |
-| 4.0 | 2012 | 6 | Minnesota | MRO | -0.1 | normal | severe weather | 2550 | 68200 | Low Gap | 0 |
-| 5.0 | 2015 | 7 | Minnesota | MRO | 1.2 | warm | severe weather | 1740 | 250000 | Low Gap | 0 |
+| 1 | 2011 | 7 | Minnesota | MRO | -0.3 | normal | severe weather | 3060 | 70000 | Low Gap | 1 |
+| 2 | 2014 | 5 | Minnesota | MRO | -0.1 | normal | intentional attack | 1 | NaN | Low Gap | 0 |
+| 3 | 2010 | 10 | Minnesota | MRO | -1.5 | cold | severe weather | 3000 | 70000 | Low Gap | 1 |
+| 4 | 2012 | 6 | Minnesota | MRO | -0.1 | normal | severe weather | 2550 | 68200 | Low Gap | 0 |
+| 5 | 2015 | 7 | Minnesota | MRO | 1.2 | warm | severe weather | 1740 | 250000 | Low Gap | 0 |
 
 ### Univariate Analysis
 
