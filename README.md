@@ -41,6 +41,8 @@ We performed the following cleaning steps:
    - `SEVERE`: Binary label 1 if the outage duration is in the top 25% (≥ 2,880 minutes / 48 hours), 0 otherwise.
 
 Here is the head of the cleaned DataFrame:
+
+<div style="overflow-x: auto; max-height: 300px; overflow-y: auto;">
    
 | OBS | YEAR | MONTH | U.S._STATE | NERC.REGION | ANOMALY.LEVEL | CLIMATE.CATEGORY | CAUSE.CATEGORY | OUTAGE.DURATION | CUSTOMERS.AFFECTED | DENSITY_TIER | SEVERE |
 |-----|------|-------|------------|-------------|---------------|------------------|----------------|-----------------|--------------------|--------------|--------|
@@ -49,6 +51,8 @@ Here is the head of the cleaned DataFrame:
 | 3 | 2010 | 10 | Minnesota | MRO | -1.5 | cold | severe weather | 3000 | 70000 | Low Gap | 1 |
 | 4 | 2012 | 6 | Minnesota | MRO | -0.1 | normal | severe weather | 2550 | 68200 | Low Gap | 0 |
 | 5 | 2015 | 7 | Minnesota | MRO | 1.2 | warm | severe weather | 1740 | 250000 | Low Gap | 0 |
+
+</div>
 
 
 
